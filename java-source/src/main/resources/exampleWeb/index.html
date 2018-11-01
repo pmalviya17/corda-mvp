@@ -1,0 +1,375 @@
+<!-- Define your frontend here. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ING Bankbazzar on Blockchain</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+    <style>
+    /* Remove the navbar's default margin-bottom and rounded borders */
+    .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+    }
+
+    /* Add a gray background color and some padding to the footer */
+    footer {
+      background-color: #f2f2f2;
+      padding: 25px;
+    }
+  </style>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.0-rc.1/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.2.0/ui-bootstrap-tpls.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/createIOUModal.js"></script>
+    <script src="js/createProductModal.js"></script>
+    <script src="js/issueCashModal.js"></script>
+    <script src="js/selfIssueProductModal.js"></script>
+    <script src="js/transferModal.js"></script>
+    <script src="js/settleModal.js"></script>
+
+</head>
+
+<body ng-app="demoAppModule" ng-controller="DemoAppCtrl as demoApp" class="bg-primary">
+<nav class="navbar navbar-primary">
+
+        <div class="navbar-primary">
+            <a class="navbar-primary" href="#"><font color="white"> {{demoApp.thisNode}}</font>></a>
+        </div>
+
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <img align="left" src="images/ETF.jpg" class="img-rounded" alt="Cinque Terre" width="150" height="100">
+                    <img align="right" src="images/cani.jpg" class="img-rounded" alt="Cinque Terre" width="150" height="100">
+                    <h3 align="center" style="font-size:50px;color:DogerBlue" class="panel-title">ING MARKET PLACE APP</h3>
+                </div>
+                <div align="center"  class="panel panel-info">
+                    <button ng-click="demoApp.openBuySellProductModal()" type="button" class="btn btn-info btn-lg" >Buy-Sell Product</button>
+                    <button ng-click="demoApp.openIssueCashModal()" type="button" class="btn btn-info btn-lg">Issue cash</button>
+                    <button ng-click="demoApp.openSelfIssueProductModal()" type="button" class="btn btn-info btn-lg">Issue Product</button>
+                    <button ng-click="demoApp.refresh()" type="button" class="btn btn-primary btn-lg"><span
+                            class="glyphicon glyphicon-refresh"></span></button>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+    </div>
+</nav>
+
+<script type="text/ng-template" id="createProductModal.html" >
+    <form class="bg-primary">
+    <div >
+        <h4 align="center" style="font-size:25px;color:DogerBlue" class="modal-title">Add new Product Request</h4>
+    </div>
+
+      <div class="modal-body" >
+
+    <div class="form-group">
+                <label class="radio-inline">
+                    <input type="radio" value="buy" name="btnn" ng-model="createProductModal.form.buysell" class="bg-default"/>Buy</label>
+                    <label class="radio-inline">
+                <input type="radio" name="btnn" ng-model="createProductModal.form.buysell" value="sell"/>Sell
+                    </label>
+
+                <!--a class="undo" ng-click="createProductModal.form.buysell = null">&otimes;</a-->
+            </div>
+            <div class="form-group">
+                <label for="createProductCounterparty" class="control-label">Counter-party:</label>
+                <select ng-model="createProductModal.form.counterparty" class="form-control" id="createProductCounterparty"
+                        ng-options="peer as peer for peer in createProductModal.peers">
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="createProductName" class="control-label">Product Name :</label>
+                <input type="text" ng-model="createProductModal.form.productName" class="form-control" id="createProductName">
+            </div>
+            <div class="form-group">
+                <label for="createProductCurrency" class="control-label">Currency (ISO code):</label>
+                <input type="text" ng-model="createProductModal.form.currency" class="form-control" id="createProductCurrency">
+            </div>
+            <div class="form-group">
+                <label for="createProductQuantity" class="control-label">Quantity<span class="label label-info"> (Int):</span></label>
+                <input type="text" ng-model="createProductModal.form.quantity" class="form-control" ng-init="createProductModal.form.quantity='0'" id="createProductQuantity">
+            </div>
+        <div class="form-group">
+
+            <label for="createProductAmount" class="control-label">Amount<span class="label label-info"> (Int)</span><span class="label label-success"> (NAV 10 GBP) :</span></label>
+          <p> {{ createProductModal.form.quantity*10 }} </p>
+            <!--input  type="text" ng-model="createProductModal.form.amount" class="form-control" id="createProductAmount" value="{{ createProductModal.form.quantity }}" -->
+        </div>
+            <div ng-show="createProductModal.formError" class="form-group">
+                <div class="alert alert-danger" role="alert">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span class="sr-only">Error:</span>
+                    Enter valid Product creation parameters
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button ng-click="createProductModal.cancel()" type="button" class="btn btn-info">Close</button>
+            <button ng-click="createProductModal.create()" type="button" class="btn btn-info">Submit</button>
+        </div>
+    </form></script>
+</script>
+
+<script type="text/ng-template" id="createProductMsgModal.html">
+    <div class="modal-body" id="create-product-modal-body">
+       <p align="center"><font color="blue"> {{ createProductMsgModal.message }}<font/><p/>
+    </div>
+</script>
+
+<script type="text/ng-template" id="issueCashModal.html">
+    <form class="bg-primary">
+        <div class="modal-header">
+            <h4 align="center" style="font-size:25px;color:DogerBlue"  class="modal-title">Self-issue cash</h4>
+    </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="issueCashCurrency" class="control-label">Currency (ISO code):</label>
+                <input type="text" ng-model="issueCashModal.form.currency" class="form-control" id="issueCashCurrency">
+            </div>
+            <div class="form-group">
+                <label for="issueCashAmount" class="control-label">Amount (Int):</label>
+                <input type="text" ng-model="issueCashModal.form.amount" class="form-control" id="issueCashAmount">
+            </div>
+            <div ng-show="issueCashModal.formError" class="form-group">
+                <div class="alert alert-danger" role="alert">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span class="sr-only">Error:</span>
+                    Enter valid cash issuance parameters.
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button ng-click="issueCashModal.cancel()" type="button" class="btn btn-default">Close</button>
+            <button ng-click="issueCashModal.issue()" type="button" class="btn btn-primary">Issue cash</button>
+        </div>
+    </form>
+</script>
+
+<script type="text/ng-template" id="issueCashMsgModal.html">
+    <div class="modal-body" id="issue-cash-modal-body">
+        <p align="center"><font color="blue"> {{ issueCashMsgModal.message }}<font/><p/>
+    </div>
+</script>
+
+
+<script type="text/ng-template" id="selfIssueProductModal.html">
+    <form class="bg-primary">
+    <div class="modal-header">
+        <h4 align="center" style="font-size:25px;color:DogerBlue" class="modal-title">issue Product</h4>
+    </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="selfIssueProduct" class="control-label">Product Name:</label>
+                <input type="text" ng-model="selfIssueProductModal.form.productName" class="form-control" id="selfIssueProduct">
+            </div>
+            <div class="form-group">
+                <label for="selfIssueProductQty" class="control-label">Quantity (Int):</label>
+                <input type="text" ng-model="selfIssueProductModal.form.quantity" class="form-control" id="selfIssueProductQty">
+            </div>
+            <div ng-show="selfIssueProductModal.formError" class="form-group">
+                <div class="alert alert-danger" role="alert">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span class="sr-only">Error:</span>
+                    Enter valid self Product issuance parameters.
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button ng-click="selfIssueProductModal.cancel()" type="button" class="btn btn-info">Close</button>
+            <button ng-click="selfIssueProductModal.issue()" type="button" class="btn btn-info">Issue Product</button>
+        </div>
+    </form>
+</script>
+
+<script type="text/ng-template" id="selfIssueProductMsgModal.html">
+    <div class="modal-body" id="self-issue-product-modal-body">
+        <p align="center"><font color="blue"> {{ selfIssueProductMsgModal.message }}<font/><p/>
+    </div>
+</script>
+
+
+<script type="text/ng-template" id="transferModal.html">
+    <form class="bg-primary">
+        <div class="modal-header">
+            <h4 align="center" style="font-size:25px;color:DogerBlue"  class="modal-title">Transfer Product</h4>
+    </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="transferCounterparty" class="control-label">Counter-party:</label>
+                <select ng-model="transferModal.form.counterparty" class="form-control" id="transferCounterparty"
+                        ng-options="peer as peer for peer in transferModal.peers">
+                </select>
+            </div>
+            <div ng-show="transferModal.formError" class="form-group">
+                <div class="alert alert-danger" role="alert">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span class="sr-only">Error:</span>
+                    Enter valid Product transfer parameters.
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button ng-click="transferModal.cancel()" type="button" class="btn btn-info">Close</button>
+            <button ng-click="transferModal.transfer()" type="button" class="btn btn-info">Transfer</button>
+        </div>
+    </form>
+</script>
+
+<script type="text/ng-template" id="transferMsgModal.html">
+    <div class="modal-body" id="transfer-modal-body">
+        <p align="center"><font color="blue"> {{ transferMsgModal.message }}<font/><p/>
+    </div>
+</script>
+
+<script type="text/ng-template" id="settleModal.html">
+    <form class="bg-primary">
+        <div class="modal-header">
+            <h4 align="center" style="font-size:25px;color:DogerBlue"   class="modal-title">Settle Product</h4>
+       </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="settleCurrency" class="control-label">Currency (ISO code):</label>
+                <input type="text" ng-model="settleModal.form.currency" class="form-control" id="settleCurrency">
+            </div>
+            <div class="form-group">
+                <label for="settleAmount" class="control-label">Amount (Int):</label>
+                <input type="text" ng-model="settleModal.form.amount" class="form-control" id="settleAmount">
+            </div>
+            <div ng-show="settleModal.formError" class="form-group">
+                <div class="alert alert-danger" role="alert">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span class="sr-only">Error:</span>
+                    Enter valid Product settle parameters.
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button ng-click="settleModal.cancel()" type="button" class="btn btn-info">Close</button>
+            <button ng-click="settleModal.settle()" type="button" class="btn btn-info">Settle</button>
+        </div>
+    </form>
+</script>
+
+<script type="text/ng-template" id="settleMsgModal.html">
+    <div class="modal-body" id="settle-modal-body">
+        <p align="center"><font color="blue"> {{ settleMsgModal.message }}<font/><p/>
+    </div>
+</script>
+
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title"><strong>Cash Holding:</strong></h3>
+            </div>
+            <div class="panel-body">
+                <table class="table">
+                    <thead>
+                    <tr bgcolor="#3399ff" class="primary" >
+                        <th>Amount</th>
+                        <th>Currency</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="info" ng-repeat="cash in demoApp.checkCashBalance">
+                        <td class="vert-align"><font color="blue"> {{cash.amount.quantity}}</font></td>
+                        <td class="vert-align"><font color="blue"> {{cash.amount.token}}</font></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title"><strong>Product Holding:</strong></h3>
+            </div>
+            <div class="panel-body">
+                <table class="table">
+
+                    <tr  bgcolor="#3399ff"  >
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="info" ng-repeat="cash in demoApp.checkProductBalance">
+                        <td class="vert-align"><font color="blue"> {{cash.productName}}</font></td>
+                        <td class="vert-align"><font color="blue"> {{cash.quantity}}</font></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+</div>
+
+<!--div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <div ng-show="!demoApp.checkProductBalance.length" class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">There are no recorded Products</h3>
+            </div>
+            <div class="panel-body">Use the "Create Product" button to send an Product to a peer.</div>
+        </div>
+        <div ng-show="demoApp.checkProductBalance.length" class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Recorded Products:</h3>
+            </div>
+            <div class="panel-body">
+                <table class="table">
+                    <thead>
+                    <tr class="primary">
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                        <th>Amount</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="primary" ng-repeat="product in demoApp.checkProductBalance">
+                        <!--td class="vert-align">{{product.lender.substring(0, 10)}}</td>
+                        <td class="vert-align">{{product.borrower.substring(0, 10)}}</td
+                        <td class="vert-align">{{product.amount}}</td>
+                        <td class="vert-align">{{product.productName}}</td>
+                        <td class="info">
+                            <div class="btn-group" role="group">
+                                <button ng-click="demoApp.openProductTransferModal(product.linearId.id)" type="button" class="btn btn-primary">Transfer
+                                </button>
+                                <button ng-click="demoApp.openProductSettleModal(product.linearId.id)" type="button" class="btn btn-primary">Settle
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+</div-->
+</body>
+</html>
